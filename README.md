@@ -21,15 +21,36 @@
 
 ## Overview
 
-Video action recognition usually relies on heavy end-to-end models that ingest many frames. We take the opposite route: **collapse a clip's temporal dimension into a single `224×224×3` image**, then classify it with a frozen ImageNet backbone and a lightweight trainable head. This reduces action recognition to plain image classification while preserving the motion cue that matters.
+**Video2SubAct** is a video-to-robot learning framework that enables robots to perform **previously unseen manipulation tasks from a single human demonstration** using reusable manipulation primitives. Instead of learning task-specific policies, the framework learns a library of primitive actions (**Reach, Pick, Move, Place, Tilt, Retract,** and **Wipe**) once through offline training and reuses them to compose new tasks without retraining.
 
-We evaluate four clip-to-image representations — **Pixel Variance** (ours), **Mean Image**, **Middle Frame**, and the **Dynamic Image** (approximate rank pooling, Bilen et al. 2018) — and four backbones (VGG16, ResNet50, EfficientNetB0, MobileNetV3-Large), all under a rigorous multi-seed, fixed-split protocol on the 7-class **Video2SubAct** manipulation-primitive dataset.
+The pipeline automatically segments continuous human demonstrations into primitive-level actions using object-centric trajectory analysis, recognizes each primitive with the proposed lightweight **V-DNN** classifier, and executes the corresponding robot motions through the **Dynamic Adaptive Trajectory Radial Network (DATRN)**.
+
+The proposed V-DNN achieves **96.7%** primitive classification accuracy while significantly outperforming ViViT, VideoMAE, and several CNN baselines with a much smaller classification head. On continuous task demonstrations, the complete Video2SubAct pipeline achieves **83.2%** primitive recognition accuracy and **82.5%** end-to-end task execution success on a **Kinova Gen3** robotic manipulator across multiple unseen task compositions.
+
+
+
 
 ---
 
-## Human Demonstrations
+## Sub-Task Primitives
 
-The dataset is built from human manipulation demonstrations. Below are sample raw source clips, each later segmented into short sub-action primitives (*Move, Pick, Place, Reach, Retract, Tilt, Wipe*).
+Each continuous demonstration is segmented into short **sub-action primitives**. Below is one sample clip per primitive class.
+
+<div align="center">
+
+| Move | Pick | Place | Reach |
+|:---:|:---:|:---:|:---:|
+| ![Move](Sub_task/Move.gif) | ![Pick](Sub_task/Pick.gif) | ![Place](Sub_task/Place.gif) | ![Reach](Sub_task/Reach.gif) |
+| **Retract** | **Tilt** | **Wipe** | |
+| ![Retract](Sub_task/Retract.gif) | ![Tilt](Sub_task/Tilt.gif) | ![Wipe](Sub_task/Wipe.gif) | |
+
+</div>
+
+---
+
+## Human Demonstrations (at inference time)
+
+Below are sample raw source clips.
 
 <div align="center">
 
