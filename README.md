@@ -43,6 +43,22 @@ The dataset is built from human manipulation demonstrations. Below are sample ra
 
 ---
 
+## Demo Video
+
+<div align="center">
+
+<!-- TODO: replace VIDEO_ID with your YouTube video ID once uploaded -->
+[![Video2SubAct Demo](https://img.youtube.com/vi/VIDEO_ID/maxresdefault.jpg)](https://www.youtube.com/watch?v=VIDEO_ID)
+
+<br><em>▶️ Click to watch the Video2SubAct demo — human demonstration to robot execution.</em>
+
+</div>
+
+> 🎥 **Demo video coming soon** — link will be added here upon release.
+
+
+---
+
 ## Sample Representations
 
 The [`Sample/`](Sample/) folder holds **one example clip per class**, converted by each representation. **Pixel Variance** lights up *where motion happened*, **Mean Image** averages movement into a static ghost, **Middle Frame** keeps a single RGB snapshot, and **Dynamic Image** encodes temporal order via rank pooling.
