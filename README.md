@@ -129,8 +129,6 @@ Backbones are always **frozen** (ImageNet weights, no top); only the head is tra
 
 Expects a 7-class layout, one subfolder per class (`Move/ Pick/ Place/ Reach/ Retract/ Tilt/ Wipe/`), each with clips in `.mp4 .avi .mov .mkv .m4v .mpg .mpeg`. Each class needs **≥ 3** videos for a non-degenerate stratified split.
 
-The **Video2SubAct Dataset** is **not publicly downloadable** and is available for **non-commercial research use on request**. See [`Dataset/LICENSE_AGREEMENT_Video2SubAct_Dataset.pdf`](Dataset/LICENSE_AGREEMENT_Video2SubAct_Dataset.pdf) for terms.
-
 
 The Dynamic Image baseline follows Bilen et al., *Action Recognition with Dynamic Image Networks*, TPAMI 2018.
 
