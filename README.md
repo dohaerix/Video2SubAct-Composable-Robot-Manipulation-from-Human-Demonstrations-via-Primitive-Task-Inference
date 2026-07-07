@@ -34,18 +34,17 @@ The proposed V-DNN achieves **96.7%** primitive classification accuracy while si
 
 ## Sub-Task Primitives
 
-Each continuous demonstration is segmented into short **sub-action primitives**. Below is one sample clip per primitive class.
+Each continuous demonstration is segmented into short **sub-action primitives** (one sample clip per class).
 
 <div align="center">
 
-| Move | Pick | Place | Reach |
-|:---:|:---:|:---:|:---:|
-| ![Move](Sub_task/Move.gif) | ![Pick](Sub_task/Pick.gif) | ![Place](Sub_task/Place.gif) | ![Reach](Sub_task/Reach.gif) |
-| **Retract** | **Tilt** | **Wipe** | |
-| ![Retract](Sub_task/Retract.gif) | ![Tilt](Sub_task/Tilt.gif) | ![Wipe](Sub_task/Wipe.gif) | |
+| Move | Pick | Place | Reach | Retract | Tilt | Wipe |
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| ![Move](Sub_task/Move.gif) | ![Pick](Sub_task/Pick.gif) | ![Place](Sub_task/Place.gif) | ![Reach](Sub_task/Reach.gif) | ![Retract](Sub_task/Retract.gif) | ![Tilt](Sub_task/Tilt.gif) | ![Wipe](Sub_task/Wipe.gif) |
 
 </div>
 
+---
 ---
 
 ## Human Demonstrations (at inference time)
