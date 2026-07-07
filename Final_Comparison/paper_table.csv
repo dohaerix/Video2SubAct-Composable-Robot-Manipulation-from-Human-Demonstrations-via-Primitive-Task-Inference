@@ -1,0 +1,4 @@
+Method,Input,Total Parameters (M),Trainable Parameters (M),Training Time (h),Top-1 Accuracy (%),Macro F1 (%),Precision (%),Recall (%),Preprocessing Time (ms),Inference Latency (ms),Throughput (FPS),Fine-tuning Protocol
+Pixel Variance (Ours),Pixel Variance Image,14.782 ± 0.000,0.068 ± 0.000,2.0239 ± 0.2234,97.90 ± 0.99,97.90 ± 0.99,97.98 ± 0.90,97.90 ± 0.99,56.433 ± 2.077,35.664 ± 0.159,28.04 ± 0.12,Frozen VGG16 backbone + trainable classifier head
+Dynamic Image,Dynamic Image,14.782 ± 0.000,0.068 ± 0.000,2.0105 ± 0.0251,99.05 ± 0.58,99.04 ± 0.59,99.08 ± 0.56,99.05 ± 0.58,130.429 ± 6.139,36.028 ± 1.095,27.78 ± 0.81,Frozen VGG16 backbone + trainable classifier head
+Mean Image,Mean Image,14.782 ± 0.000,0.068 ± 0.000,1.9859 ± 0.0832,98.76 ± 0.72,98.76 ± 0.72,98.81 ± 0.69,98.76 ± 0.72,56.206 ± 5.897,39.490 ± 8.232,26.03 ± 4.25,Frozen VGG16 backbone + trainable classifier head

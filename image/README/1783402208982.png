@@ -1,0 +1,201 @@
+# Clip-to-Image Action Recognition
+
+A lightweight action-recognition pipeline that collapses each video clip into a **single image** and classifies it with a frozen **VGG16** backbone. Instead of running heavy end-to-end video models, every clip is reduced to one 224×224×3 representation, making preprocessing and inference cheap while keeping accuracy competitive.
+
+The repository compares four clip-to-image representations under an identical training protocol (same frozen-VGG16 head, same stratified 5-fold cross validation) for a fair, apples-to-apples evaluation:
+
+| Method | Representation |
+|---|---|
+| **Pixel Variance** *(ours)* | Grayscale temporal variance of all frames, replicated to 3 channels |
+| **Mean Image** | Grayscale temporal mean of all frames, replicated to 3 channels |
+| **Middle Frame** | The true RGB middle frame of the clip |
+| **Dynamic Image** | Approximate rank pooling (Bilen et al., TPAMI 2018) |
+
+## Dataset
+
+The pipeline expects a 7-class action dataset organized as one subfolder per class, each containing video clips:
+
+```
+data/
+├── Move/
+├── Pick/
+├── Place/
+├── Reach/
+├── Retract/
+├── Tilt/
+└── Wipe/
+```
+
+Supported video formats: `.mp4`, `.avi`, `.mov`, `.mkv`. Every video is used exactly once — **no augmentation, no class balancing, no synthetic copies.** Each class must contain at least `N_FOLDS` (default 5) videos for stratified cross validation to work.
+
+The full **Video2SubAct Dataset** is not publicly downloadable and is available for non-commercial research use only, on request. See [Dataset Access](#dataset-access) below.
+
+## Sample representations
+
+The `Sample/` folder contains one example clip per action class, converted by each of the four methods. The grids below show how the same clip looks under each representation — note how **Pixel Variance** highlights regions of motion, **Mean Image** averages out movement, and **Middle Frame** keeps a single RGB snapshot.
+
+### Pixel Variance (ours)
+
+| Move | Pick | Place | Reach | Retract | Tilt | Wipe |
+|---|---|---|---|---|---|---|
+| ![Move](Sample/PixelVariance/Move_002__pick_place__2__f000099-000139_idx0001_repr.png) | ![Pick](Sample/PixelVariance/Pick_002__pick_give__2__f000155-000247_idx0201_repr.png) | ![Place](Sample/PixelVariance/Place_002__pick_place__2__f000140-000185_idx0401_repr.png) | ![Reach](Sample/PixelVariance/Reach_002__mopping__2__f000000-000148_idx0601_repr.png) | ![Retract](Sample/PixelVariance/Retract_002_idx0801_repr.png) | ![Tilt](Sample/PixelVariance/Tilt_002__pick_pour_new__2__f000229-000339_idx1001_repr.png) | ![Wipe](Sample/PixelVariance/Wipe_002__mopping__2__f000149-000283_idx1201_repr.png) |
+
+### Mean Image
+
+| Move | Pick | Place | Reach | Retract | Tilt | Wipe |
+|---|---|---|---|---|---|---|
+| ![Move](Sample/MeanImage/Move_002__pick_place__2__f000099-000139_idx0001_repr.png) | ![Pick](Sample/MeanImage/Pick_002__pick_give__2__f000155-000247_idx0201_repr.png) | ![Place](Sample/MeanImage/Place_002__pick_place__2__f000140-000185_idx0401_repr.png) | ![Reach](Sample/MeanImage/Reach_002__mopping__2__f000000-000148_idx0601_repr.png) | ![Retract](Sample/MeanImage/Retract_002_idx0801_repr.png) | ![Tilt](Sample/MeanImage/Tilt_002__pick_pour_new__2__f000229-000339_idx1001_repr.png) | ![Wipe](Sample/MeanImage/Wipe_002__mopping__2__f000149-000283_idx1201_repr.png) |
+
+### Middle Frame
+
+| Move | Pick | Place | Reach | Retract | Tilt | Wipe |
+|---|---|---|---|---|---|---|
+| ![Move](Sample/MiddleFrame/Move_002__pick_place__2__f000099-000139_idx0001_repr.png) | ![Pick](Sample/MiddleFrame/Pick_002__pick_give__2__f000155-000247_idx0201_repr.png) | ![Place](Sample/MiddleFrame/Place_002__pick_place__2__f000140-000185_idx0401_repr.png) | ![Reach](Sample/MiddleFrame/Reach_002__mopping__2__f000000-000148_idx0601_repr.png) | ![Retract](Sample/MiddleFrame/Retract_002_idx0801_repr.png) | ![Tilt](Sample/MiddleFrame/Tilt_002__pick_pour_new__2__f000229-000339_idx1001_repr.png) | ![Wipe](Sample/MiddleFrame/Wipe_002__mopping__2__f000149-000283_idx1201_repr.png) |
+
+### Dynamic Image
+
+| Move | Pick | Place | Reach | Retract | Tilt | Wipe |
+|---|---|---|---|---|---|---|
+| ![Move](Sample/DHI_VGG16/Move_002__pick_place__2__f000099-000139_idx0041_repr.png) | ![Pick](Sample/DHI_VGG16/Pick_002__pick_give__2__f000155-000247_idx0355_repr.png) | ![Place](Sample/DHI_VGG16/Place_002__pick_place__2__f000140-000185_idx0523_repr.png) | ![Reach](Sample/DHI_VGG16/Reach_002__mopping__2__f000000-000148_idx0731_repr.png) | ![Retract](Sample/DHI_VGG16/Retract_002_idx0861_repr.png) | ![Tilt](Sample/DHI_VGG16/Tilt_002__pick_pour_new__2__f000229-000339_idx1187_repr.png) | ![Wipe](Sample/DHI_VGG16/Wipe_002__mopping__2__f000149-000283_idx1307_repr.png) |
+
+## Repository structure
+
+```
+.
+├── src/
+│   ├── DHI_VGG16.py                  # Full pipeline incl. Dynamic Image + SOTA comparison (Table II)
+│   ├── mean_middle_pixelVariance.py  # Core 3 methods: Pixel Variance, Mean Image, Middle Frame
+│   └── backbone_comparison_pvi.py    # Backbone comparison (ResNet-50 / EfficientNet-B0 / MobileNetV3) on pre-made PVI images
+├── assets/                           # Pipeline diagrams used in this README
+├── Sample/                           # One example clip per class, under each method
+│   ├── PixelVariance/
+│   ├── MeanImage/
+│   ├── MiddleFrame/
+│   └── DHI_VGG16/
+├── Dataset/                          # Dataset license / access agreement
+├── requirements.txt
+├── README.md
+└── LICENSE
+```
+
+The repository contains two kinds of experiments:
+
+**1. Representation comparison (video input).** `mean_middle_pixelVariance.py` and `DHI_VGG16.py` decode raw videos and compare different clip-to-image representations on the same frozen-VGG16 head. `mean_middle_pixelVariance.py` runs the three core representations (Pixel Variance, Mean Image, Middle Frame); `DHI_VGG16.py` additionally implements the Dynamic Image baseline and produces a lightweight-vs-heavy video-model comparison table.
+
+![Video clip-to-image VGG16 pipeline](assets/video_clip_to_image_vgg16_pipeline.png)
+
+**2. Backbone comparison (pre-made PVI input).** `backbone_comparison_pvi.py` skips video decoding entirely and loads the Pixel Variance Images (PVI) you have already generated and saved as PNGs. It holds the input and folds fixed while swapping the backbone — ResNet-50, EfficientNet-B0, and MobileNetV3 — each ImageNet-pretrained and **partially fine-tuned** (only the top conv block is unfrozen). This isolates the effect of the backbone for an apples-to-apples comparison on identical inputs. It reports Top-1 accuracy, precision, recall, and macro F1-score per fold.
+
+![PVI backbone comparison pipeline](assets/pvi_backbone_comparison_pipeline.png)
+
+## Installation
+
+```bash
+git clone https://github.com/dohaerix/pixel-variance-action-recognition.git
+cd pixel-variance-action-recognition
+pip install -r requirements.txt
+```
+
+A GPU is recommended (training runs many folds for many epochs), but the scripts run on CPU as well.
+
+## Usage
+
+1. Open the script you want to run and edit the **CONFIGURATION** block near the top:
+
+   ```python
+   DATA_DIR   = "/path/to/data"      # root folder, one subfolder per class
+   OUTPUT_DIR = "/path/to/results"   # everything is written here
+   METHODS_TO_RUN = [...]            # which representations to run
+   ```
+
+2. Run:
+
+   ```bash
+   python src/mean_middle_pixelVariance.py
+   # or, for the full pipeline with Dynamic Image:
+   python src/DHI_VGG16.py
+   # or, to compare backbones on pre-made PVI images:
+   python src/backbone_comparison_pvi.py
+   ```
+
+For `backbone_comparison_pvi.py`, `DATA_DIR` must point to a folder of pre-generated **Pixel Variance Image (PVI) PNGs**, laid out one subfolder per class (`Move/*.png`, `Pick/*.png`, …) — no video decoding happens in this script. Its backbones are selected via `MODELS_TO_RUN`, and the fraction of the network that is unfrozen for fine-tuning is controlled by `FT_UNFREEZE_LAYERS` (default 20).
+
+Key hyperparameters (also in the CONFIGURATION block):
+
+| Parameter | Default | Description |
+|---|---|---|
+| `N_FOLDS` | 5 | Stratified cross-validation folds |
+| `TARGET_SIZE` | (224, 224) | VGG16 input size |
+| `EPOCHS` | 1500 | Training epochs per fold |
+| `BATCH_SIZE` | 12 | Mini-batch size |
+| `LR` | 1e-4 | Learning rate |
+| `NUM_CLASSES` | 7 | Number of action classes |
+| `RANDOM_SEED` | 42 | Reproducibility seed |
+
+### Resume support
+
+All scripts are **resume-safe**. If a run is interrupted (crash, kill, power loss), simply re-run the same command — any fold whose model file and metrics row already exist on disk is skipped, and execution continues from where it stopped. This holds across methods/backbones, not just within one.
+
+## Outputs
+
+Everything is written under `OUTPUT_DIR`. For each method:
+
+```
+<OUTPUT_DIR>/
+├── PixelVariance/
+│   ├── models/                     # trained VGG16 head per fold (.h5)
+│   ├── plots/                      # accuracy, loss, confusion matrix, 3D t-SNE
+│   ├── data/                       # exact numerical data behind every plot (CSV)
+│   ├── representation_images/      # the actual 224×224×3 image fed to VGG16, per clip
+│   ├── representation_image_manifest.csv
+│   ├── metrics_per_fold.csv
+│   └── per_fold_table_rows.csv
+├── MeanImage/        (same structure)
+├── MiddleFrame/      (same structure)
+├── comparison_table_raw.csv        # every per-fold value, all methods stacked
+├── Table_I_ablation_study.csv      # formatted mean ± std (IEEE Table I style)
+├── Table_I_per_fold_raw.csv
+└── plot_manifest.csv               # index of every plot PNG + its paired CSV
+```
+
+`DHI_VGG16.py` additionally writes `Table_II_sota_comparison.csv` and `Table_II_per_fold_raw.csv`, comparing the lightweight clip-to-image methods against heavy end-to-end video models (ViViT, VideoMAE). Those video-model numbers are manual placeholders — fill in the `SOTA_VIDEO_RESULTS` dictionary at the top of the script with your own measurements and re-run (training is skipped via the resume logic).
+
+`backbone_comparison_pvi.py` writes `Table_main_results.csv` (mean ± std per backbone) and `Table_main_per_fold_raw.csv` instead of the Table I/II files.
+
+## Metrics
+
+Each fold reports Top-1 accuracy, macro F1-score (and precision/recall for the backbone comparison), per-clip preprocessing time (ms), per-clip inference latency (ms), and throughput (FPS). Every plot is mirrored by a CSV containing the exact values behind it, so all figures are fully reproducible from disk.
+
+## Dataset Access
+
+The **Video2SubAct Dataset** is not publicly available and cannot be downloaded directly. Researchers wishing to use it must first submit a written request to the corresponding author; access is granted at the authors' discretion under a signed non-commercial research-use agreement. See [`Dataset/LICENSE_AGREEMENT_Video2SubAct_Dataset.pdf`](Dataset/LICENSE_AGREEMENT_Video2SubAct_Dataset.pdf) for the full terms.
+
+Requests for access should be sent to the corresponding author: **Dharmendra Sharma**, Indian Institute of Technology Mandi, Himachal Pradesh, India — `d22194@students.iitmandi.ac.in`.
+
+## Reference
+
+The Dynamic Image baseline follows Bilen et al., *"Action Recognition with Dynamic Image Networks"*, IEEE TPAMI, 2018.
+
+## Citation
+
+If you use this code or the Video2SubAct Dataset in your research, please cite:
+
+```bibtex
+@article{sharma2026video2subact,
+  author  = {Sharma, Dharmendra and Sharma, Archit and Rebeiro, John and
+             Thakur, Peeyush and Gupta, Sandeep and Dhar, Narendra Kumar and
+             Behera, Laxmidhar},
+  title   = {Video2SubAct: Composable Robot Manipulation from Human
+             Demonstrations via Primitive Task Inference},
+  journal = {Autonomous Robots},
+  year    = {2026}
+}
+```
+
+Plain text:
+
+> D. Sharma, A. Sharma, J. Rebeiro, P. Thakur, S. Gupta, N. K. Dhar, and L. Behera, "Video2SubAct: Composable Robot Manipulation from Human Demonstrations via Primitive Task Inference," *Autonomous Robots*, 2026.
+
+## License
+
+Released under the MIT License — see [LICENSE](LICENSE).

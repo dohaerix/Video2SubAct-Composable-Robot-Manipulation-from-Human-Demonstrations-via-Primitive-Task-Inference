@@ -1,0 +1,4 @@
+Method,Total Parameters,Trainable Parameters,Non-trainable Parameters,Total Parameters (M),Trainable Parameters (M),Non-trainable Parameters (M)
+Pixel Variance (Ours),14782279 ± 0,67591 ± 0,14714688 ± 0,14.782 ± 0.000,0.068 ± 0.000,14.715 ± 0.000
+Dynamic Image,14782279 ± 0,67591 ± 0,14714688 ± 0,14.782 ± 0.000,0.068 ± 0.000,14.715 ± 0.000
+Mean Image,14782279 ± 0,67591 ± 0,14714688 ± 0,14.782 ± 0.000,0.068 ± 0.000,14.715 ± 0.000

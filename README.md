@@ -1,0 +1,158 @@
+<div align="center">
+
+# Video2SubAct: Composable Robot Manipulation from Human Demonstrations via Primitive Task Inference
+
+**Collapse a video clip into a single image, then classify it with a frozen CNN.**
+
+*Official implementation for* ***Video2SubAct: Composable Robot Manipulation from Human Demonstrations via Primitive Task Inference*** *(Autonomous Robots, 2026).*
+
+<p>
+  <img alt="Python" src="https://img.shields.io/badge/Python-3.9%2B-3776AB?logo=python&logoColor=white">
+  <img alt="TensorFlow" src="https://img.shields.io/badge/TensorFlow-%E2%89%A52.10-FF6F00?logo=tensorflow&logoColor=white">
+  <img alt="License" src="https://img.shields.io/badge/License-MIT-green">
+  <img alt="Classes" src="https://img.shields.io/badge/classes-7-informational">
+  <img alt="Backbones" src="https://img.shields.io/badge/backbones-4-informational">
+  <img alt="Protocol" src="https://img.shields.io/badge/protocol-multi--seed%2070%2F15%2F15-informational">
+</p>
+
+</div>
+
+---
+
+## Overview
+
+Video action recognition usually relies on heavy end-to-end models that ingest many frames. We take the opposite route: **collapse a clip's temporal dimension into a single `224×224×3` image**, then classify it with a frozen ImageNet backbone and a lightweight trainable head. This reduces action recognition to plain image classification while preserving the motion cue that matters.
+
+We evaluate four clip-to-image representations — **Pixel Variance** (ours), **Mean Image**, **Middle Frame**, and the **Dynamic Image** (approximate rank pooling, Bilen et al. 2018) — and four backbones (VGG16, ResNet50, EfficientNetB0, MobileNetV3-Large), all under a rigorous multi-seed, fixed-split protocol on the 7-class **Video2SubAct** manipulation-primitive dataset.
+
+---
+
+## Human Demonstrations
+
+The dataset is built from human manipulation demonstrations. Below are sample raw source clips, each later segmented into short sub-action primitives (*Move, Pick, Place, Reach, Retract, Tilt, Wipe*).
+
+<div align="center">
+
+| Pick & Place | Pick & Give |
+|:---:|:---:|
+| ![Pick and Place](gifs/pic_and_place.gif) | ![Pick and Give](gifs/pic_and_give.gif) |
+| **Pick & Pour** | **Mopping** |
+| ![Pick and Pour](gifs/pick_and_pour.gif) | ![Mopping](gifs/mop.gif) |
+
+</div>
+
+---
+
+## Sample Representations
+
+The [`Sample/`](Sample/) folder holds **one example clip per class**, converted by each representation. **Pixel Variance** lights up *where motion happened*, **Mean Image** averages movement into a static ghost, **Middle Frame** keeps a single RGB snapshot, and **Dynamic Image** encodes temporal order via rank pooling.
+
+### Pixel Variance <sub>(ours)</sub>
+
+| Move | Pick | Place | Reach | Retract | Tilt | Wipe |
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| ![Move](Sample/PixelVariance/Move_002__pick_place__2__f000099-000139_idx0001_repr.png) | ![Pick](Sample/PixelVariance/Pick_002__pick_give__2__f000155-000247_idx0201_repr.png) | ![Place](Sample/PixelVariance/Place_002__pick_place__2__f000140-000185_idx0401_repr.png) | ![Reach](Sample/PixelVariance/Reach_002__mopping__2__f000000-000148_idx0601_repr.png) | ![Retract](Sample/PixelVariance/Retract_002_idx0801_repr.png) | ![Tilt](Sample/PixelVariance/Tilt_002__pick_pour_new__2__f000229-000339_idx1001_repr.png) | ![Wipe](Sample/PixelVariance/Wipe_002__mopping__2__f000149-000283_idx1201_repr.png) |
+
+### Mean Image
+
+| Move | Pick | Place | Reach | Retract | Tilt | Wipe |
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| ![Move](Sample/MeanImage/Move_002__pick_place__2__f000099-000139_idx0001_repr.png) | ![Pick](Sample/MeanImage/Pick_002__pick_give__2__f000155-000247_idx0201_repr.png) | ![Place](Sample/MeanImage/Place_002__pick_place__2__f000140-000185_idx0401_repr.png) | ![Reach](Sample/MeanImage/Reach_002__mopping__2__f000000-000148_idx0601_repr.png) | ![Retract](Sample/MeanImage/Retract_002_idx0801_repr.png) | ![Tilt](Sample/MeanImage/Tilt_002__pick_pour_new__2__f000229-000339_idx1001_repr.png) | ![Wipe](Sample/MeanImage/Wipe_002__mopping__2__f000149-000283_idx1201_repr.png) |
+
+### Middle Frame
+
+| Move | Pick | Place | Reach | Retract | Tilt | Wipe |
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| ![Move](Sample/MiddleFrame/Move_002__pick_place__2__f000099-000139_idx0001_repr.png) | ![Pick](Sample/MiddleFrame/Pick_002__pick_give__2__f000155-000247_idx0201_repr.png) | ![Place](Sample/MiddleFrame/Place_002__pick_place__2__f000140-000185_idx0401_repr.png) | ![Reach](Sample/MiddleFrame/Reach_002__mopping__2__f000000-000148_idx0601_repr.png) | ![Retract](Sample/MiddleFrame/Retract_002_idx0801_repr.png) | ![Tilt](Sample/MiddleFrame/Tilt_002__pick_pour_new__2__f000229-000339_idx1001_repr.png) | ![Wipe](Sample/MiddleFrame/Wipe_002__mopping__2__f000149-000283_idx1201_repr.png) |
+
+### Dynamic Image
+
+| Move | Pick | Place | Reach | Retract | Tilt | Wipe |
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| ![Move](Sample/DHI_VGG16/Move_002__pick_place__2__f000099-000139_idx0041_repr.png) | ![Pick](Sample/DHI_VGG16/Pick_002__pick_give__2__f000155-000247_idx0355_repr.png) | ![Place](Sample/DHI_VGG16/Place_002__pick_place__2__f000140-000185_idx0523_repr.png) | ![Reach](Sample/DHI_VGG16/Reach_002__mopping__2__f000000-000148_idx0731_repr.png) | ![Retract](Sample/DHI_VGG16/Retract_002_idx0861_repr.png) | ![Tilt](Sample/DHI_VGG16/Tilt_002__pick_pour_new__2__f000229-000339_idx1187_repr.png) | ![Wipe](Sample/DHI_VGG16/Wipe_002__mopping__2__f000149-000283_idx1307_repr.png) |
+
+---
+
+## Method
+
+<div align="center">
+<img src="Sample/video2subact1.jpg" alt="Video2SubAct methodology pipeline" width="900">
+<br><em>A single human demonstration video is segmented by temporal boundary detection into primitive intervals, each interval is classified into an action primitive, and the resulting sequence drives robot manipulation execution.</em>
+</div>
+
+<!-- TODO: place the pipeline figure at assets/pipeline.png (or change the src path above) -->
+
+```
+video clip ──decode──▶ frames ──temporal reduction──▶ 1 image (224×224×3) ──frozen CNN + head──▶ action label
+```
+
+The reduction and the backbone are both **swappable** while the tensor shape stays fixed, enabling two clean, apples-to-apples studies.
+
+| Representation | What it computes | Channels |
+|---|---|---|
+| **Pixel Variance** <sub>(ours)</sub> | Grayscale temporal variance over all frames, min–max normalized, replicated to 3 channels — bright where pixels changed. | gray → 3ch |
+| **Mean Image** | Grayscale temporal mean over all frames — averages motion away. | gray → 3ch |
+| **Dynamic Image** | Approximate rank pooling (Bilen et al., TPAMI 2018) — encodes temporal order. | RGB |
+| **Middle Frame** | The true RGB middle frame — a static snapshot, no temporal info (baseline). | RGB |
+
+**Classifier head (identical everywhere):**
+
+```
+frozen backbone → GlobalAveragePooling2D → LayerNormalization
+                → Dense(128, relu) → Dropout(0.5) → Dense(7, softmax)
+```
+
+---
+
+## Experimental Protocol
+
+| Setting | Value |
+|---|---|
+| Classes | 7 (`Move, Pick, Place, Reach, Retract, Tilt, Wipe`) |
+| Split | Fixed **70 / 15 / 15** stratified (Train / Val / Test) |
+| Seeds | `42, 123, 999, 2025, 777` → reported as **mean ± std** |
+| Input size | `224 × 224 × 3` |
+| Epochs | **100**, no early stopping, no LR scheduling |
+| Optimizer | Adam, LR `1e-4`, batch 12 |
+| Checkpoint | best `val_loss` (`save_best_only`) |
+| Test eval | **once**, on the untouched test set, best-val checkpoint |
+| Augmentation | Train only: Original + Gaussian Blur + Horizontal Flip + Color Jitter |
+
+Backbones are always **frozen** (ImageNet weights, no top); only the head is trained. Test is touched exactly once per seed. Results aggregate as **mean ± std** across five seeds.
+
+---
+
+## Repository Structure
+
+```
+.
+├── DHI_VAR_MEAN.py   # Representation study: Pixel Variance · Dynamic Image · Mean Image (frozen VGG16)
+├── v_v_e.py          # Backbone study: PVI + ResNet50 · EfficientNetB0 · MobileNetV3-Large (all frozen)
+├── requirements.txt
+├── gifs/             # Raw human demonstration clips
+├── Sample/           # One example clip per class, per representation
+│   ├── PixelVariance/  MeanImage/  MiddleFrame/  DHI_VGG16/
+└── Dataset/          # Dataset license / access agreement
+```
+
+---
+
+---
+
+## Dataset
+
+Expects a 7-class layout, one subfolder per class (`Move/ Pick/ Place/ Reach/ Retract/ Tilt/ Wipe/`), each with clips in `.mp4 .avi .mov .mkv .m4v .mpg .mpeg`. Each class needs **≥ 3** videos for a non-degenerate stratified split.
+
+The **Video2SubAct Dataset** is **not publicly downloadable** and is available for **non-commercial research use on request**. See [`Dataset/LICENSE_AGREEMENT_Video2SubAct_Dataset.pdf`](Dataset/LICENSE_AGREEMENT_Video2SubAct_Dataset.pdf) for terms.
+
+
+The Dynamic Image baseline follows Bilen et al., *Action Recognition with Dynamic Image Networks*, TPAMI 2018.
+
+---
+
+## License & Contact
+
+Code released under the **MIT License** (see [`LICENSE`](LICENSE)); the dataset is licensed separately for non-commercial research use.
+
+**Dharmendra Sharma** (corresponding author) — `d22194@students.iitmandi.ac.in`
+For dataset requests, include your name, affiliation, and intended research use.

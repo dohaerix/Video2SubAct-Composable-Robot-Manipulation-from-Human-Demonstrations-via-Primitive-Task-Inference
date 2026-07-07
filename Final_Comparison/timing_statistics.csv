@@ -1,0 +1,4 @@
+Method,Preprocessing Time (ms),Inference Latency (ms),Throughput (FPS),Total Training Time (h)
+Pixel Variance (Ours),56.433 ± 2.077,35.664 ± 0.159,28.04 ± 0.12,2.0239 ± 0.2234
+Dynamic Image,130.429 ± 6.139,36.028 ± 1.095,27.78 ± 0.81,2.0105 ± 0.0251
+Mean Image,56.206 ± 5.897,39.490 ± 8.232,26.03 ± 4.25,1.9859 ± 0.0832
