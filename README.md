@@ -120,20 +120,6 @@ frozen backbone → GlobalAveragePooling2D → LayerNormalization
 
 Backbones are always **frozen** (ImageNet weights, no top); only the head is trained. Test is touched exactly once per seed. Results aggregate as **mean ± std** across five seeds.
 
----
-
-## Repository Structure
-
-```
-.
-├── DHI_VAR_MEAN.py   # Representation study: Pixel Variance · Dynamic Image · Mean Image (frozen VGG16)
-├── v_v_e.py          # Backbone study: PVI + ResNet50 · EfficientNetB0 · MobileNetV3-Large (all frozen)
-├── requirements.txt
-├── gifs/             # Raw human demonstration clips
-├── Sample/           # One example clip per class, per representation
-│   ├── PixelVariance/  MeanImage/  MiddleFrame/  DHI_VGG16/
-└── Dataset/          # Dataset license / access agreement
-```
 
 ---
 
