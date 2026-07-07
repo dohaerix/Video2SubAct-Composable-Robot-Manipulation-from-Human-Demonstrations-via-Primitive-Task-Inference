@@ -123,6 +123,12 @@ Backbones are always **frozen** (ImageNet weights, no top); only the head is tra
 
 ---
 
+<p align="center">
+  <img alt="Status" src="https://img.shields.io/badge/code-coming%20soon-orange">
+</p>
+
+> **Note:** Code and pretrained models will be released soon, upon publication.
+
 ---
 
 ## Dataset
